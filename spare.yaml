@@ -1,0 +1,23 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata: {name: placeholder}
+value: -10
+preemptionPolicy: Never
+globalDefault: false
+description: "Low-priority placeholder that real pods may evict"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: spare}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: spare}}
+  template:
+    metadata: {labels: {app: spare}}
+    spec:
+      priorityClassName: placeholder
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: pause
+        image: registry.k8s.io/pause:3.10
+        resources: {requests: {cpu: 1200m}}
